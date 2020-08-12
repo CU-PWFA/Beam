@@ -1,0 +1,16 @@
+name: CU-PWFA
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.7.3
+  - matplotlib
+  - numpy
+  - scipy
+  - cython
+  - pyfftw
+  - h5py
+  - ipykernel
+  - Pillow
+  - setuptools
+  - pip
