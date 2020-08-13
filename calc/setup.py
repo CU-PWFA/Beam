@@ -5,8 +5,8 @@ Created on Thu Sep 14 14:46:39 2017
 
 @author: robert
 
-Run from the python folder with the command:
-    'python beam/calc/setup.py build_ext --inplace'
+Run from the top folder with the command:
+    'python calc/setup.py build_ext --inplace'
 """
 
 import numpy
@@ -19,8 +19,8 @@ from Cython.Build import cythonize
 # On windows the math library is already linked
 if os.name == 'nt':
     ext_modules=[
-        Extension('beam.calc.*',
-                  sources=['beam/calc/*.pyx'], #Compile entire module
+        Extension('calc.*',
+                  sources=['calc/*.pyx'], #Compile entire module
                   #sources=['beam/calc/electron.pyx', 'beam/calc/ionization.pyx',
                   #         'beam/calc/plasma.pyx', 'beam/calc/laser.pyx'],
                   #libraries=["fftw3"],
@@ -34,8 +34,8 @@ if os.name == 'nt':
     ]
 else:  
     ext_modules=[
-        Extension('beam.calc.*',
-                  sources=['beam/calc/*.pyx'], #Compile entire module
+        Extension('calc.*',
+                  sources=['calc/*.pyx'], #Compile entire module
                   #sources=['beam/calc/ionization.pyx'],
                   #sources=['beam/calc/laser.pyx'], #Compile specific files
                   libraries=["m"],

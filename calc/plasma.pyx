@@ -14,9 +14,9 @@ cimport numpy as np
 from numpy.fft import fftfreq
 from scipy import integrate
 from cython.parallel import prange
-from beam.calc import laser
-from beam.calc.ionization cimport adk_rate_linear
-from beam.calc.ionization cimport rate_lithium
+from calc import laser
+from calc.ionization cimport adk_rate_linear
+from calc.ionization cimport rate_lithium
 
 # Load necessary C functions
 cdef extern from "complex.h" nogil:
