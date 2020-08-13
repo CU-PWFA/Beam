@@ -1,4 +1,4 @@
-name: CU-PWFA
+name: beam
 channels:
   - conda-forge
   - defaults
