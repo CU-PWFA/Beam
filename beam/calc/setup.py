@@ -20,7 +20,7 @@ from Cython.Build import cythonize
 if os.name == 'nt':
     ext_modules=[
         Extension('calc.*',
-                  sources=['calc/*.pyx'], #Compile entire module
+                  sources=['beam/calc/*.pyx'], #Compile entire module
                   #sources=['beam/calc/electron.pyx', 'beam/calc/ionization.pyx',
                   #         'beam/calc/plasma.pyx', 'beam/calc/laser.pyx'],
                   #libraries=["fftw3"],
@@ -35,7 +35,7 @@ if os.name == 'nt':
 else:  
     ext_modules=[
         Extension('calc.*',
-                  sources=['calc/*.pyx'], #Compile entire module
+                  sources=['beam/calc/*.pyx'], #Compile entire module
                   #sources=['beam/calc/ionization.pyx'],
                   #sources=['beam/calc/laser.pyx'], #Compile specific files
                   libraries=["m"],
