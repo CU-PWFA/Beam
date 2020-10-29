@@ -20,7 +20,7 @@ conda activate beam
 
 Run the compile script to build the Python directories:
 ```
-python calc/setup.py build_ext --inplace
+python beam/calc/setup.py build_ext --inplace
 ```
 
 If all goes well everything will complete successfully. 
