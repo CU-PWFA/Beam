@@ -16,11 +16,13 @@ from scipy import integrate
 from cython.parallel import prange
 from beam.calc import laser
 from beam.calc.ionization cimport adk_rate_linear
+from beam.calc.ionization cimport ppt_rate_linear
 from beam.calc.ionization cimport rate_lithium
 
 # Load necessary C functions
 cdef extern from "complex.h" nogil:
-    double complex cexp(double complex)
+    # double complex cexp(double complex)
+    double complex exp(double complex)
     double complex csqrt(double complex)
     double cabs(double complex)
 
@@ -32,7 +34,7 @@ cdef extern from "math.h" nogil:
 def plasma_refraction(double complex[:, :, :] E, double[:] x, double[:] y,
                       double[:] z, double[:] t, double lam, double n0, 
                       double z0, fft, ifft, saveE, saven, atom, loadn, loadne,
-                      int num_threads):
+                      int num_threads, ionization='adk'):
     """ Propagate a laser pulse through a plasma accounting for refraction.
 
     Propogates a laser pulse through a region of partially ionized gas. This
@@ -74,6 +76,8 @@ def plasma_refraction(double complex[:, :, :] E, double[:] x, double[:] y,
         Function that loads the initial gas density in 10^17 cm^-3 when passed an index.
     loadne : func
         Function that loads the initial plasma density in 10^17 cm^-3 when passed an index.
+    ionization : string, optional
+        Function to use for the ionization model.
     """
     cdef int i, j, k, l
     # TODO abstract this into its own function
@@ -101,6 +105,12 @@ def plasma_refraction(double complex[:, :, :] E, double[:] x, double[:] y,
     cdef double[:] fx = fftfreq(Nx, dx)
     cdef double[:] fy = fftfreq(Ny, dy)
     cdef double complex[:, :] ikz = laser.ikz_RS(fx, fy, lam, nh)
+    if ionization == 'adk':
+        rate_func = adk_rate_linear
+    if ionization == 'ppt':
+        rate_func = ppt_rate_linear
+    if ionization =='lithium':
+        rate_func = rate_lithium
     cdef double complex arg
     cdef double rate
     cdef double Eavg
@@ -117,10 +127,11 @@ def plasma_refraction(double complex[:, :, :] E, double[:] x, double[:] y,
             with nogil:
                 for k in prange(Nx, num_threads=num_threads):
                     for l in range(Ny):
-                        e[k, l] *= cexp(arg*ne[k, l])
+                        # e[k, l] *= cexp(arg*ne[k, l])
+                        e[k, l] *= exp(arg*ne[k, l])
                         # Ionize the gas
                         Eavg = 0.5*(cabs(E[j, k, l]) + cabs(e[k, l]))
-                        rate = adk_rate_linear(EI, Eavg, Z, ll, m)
+                        rate = rate_func(EI, Eavg, Z, ll, m)
                         ne[k, l] = n[k, l]-(n[k, l]-ne[k, l])*exp(-rate*dt)
             E[j, :, :] = e
         saveE(E, z[i]+z0)
@@ -219,6 +230,8 @@ def plasma_refraction_energy(double complex[:, :, :] E, double[:] x, double[:] y
     cdef double complex[:, :] ikz = laser.ikz_RS(fx, fy, lam, nh)
     if ionization == 'adk':
         rate_func = adk_rate_linear
+    if ionization == 'ppt':
+        rate_func = ppt_rate_linear
     if ionization =='lithium':
         rate_func = rate_lithium
     cdef double complex arg
@@ -245,7 +258,8 @@ def plasma_refraction_energy(double complex[:, :, :] E, double[:] x, double[:] y
                     for l in range(Ny):
                         ng = n[k, l] - ne[k, l]
                         e_abs = cabs(e[k, l])
-                        e[k, l] *= cexp(arg*ne[k, l] + arg_kerr*ng*e_abs*e_abs)
+                        # e[k, l] *= cexp(arg*ne[k, l] + arg_kerr*ng*e_abs*e_abs)
+                        e[k, l] *= exp(arg*ne[k, l] + arg_kerr*ng*e_abs*e_abs)
                         # Ionize the gas
                         Eavg = 0.5*(cabs(E[j, k, l]) + e_abs)
                         rate = rate_func(EI, Eavg, Z, ll, m)
