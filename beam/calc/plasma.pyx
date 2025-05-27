@@ -131,7 +131,7 @@ def plasma_refraction(double complex[:, :, :] E, double[:] x, double[:] y,
                         e[k, l] *= exp(arg*ne[k, l])
                         # Ionize the gas
                         Eavg = 0.5*(cabs(E[j, k, l]) + cabs(e[k, l]))
-                        rate = rate_func(EI, Eavg, Z, ll, m)
+                        rate = rate_func(EI, Eavg, Z, ll, m, lam)
                         ne[k, l] = n[k, l]-(n[k, l]-ne[k, l])*exp(-rate*dt)
             E[j, :, :] = e
         saveE(E, z[i]+z0)
@@ -262,7 +262,7 @@ def plasma_refraction_energy(double complex[:, :, :] E, double[:] x, double[:] y
                         e[k, l] *= exp(arg*ne[k, l] + arg_kerr*ng*e_abs*e_abs)
                         # Ionize the gas
                         Eavg = 0.5*(cabs(E[j, k, l]) + e_abs)
-                        rate = rate_func(EI, Eavg, Z, ll, m)
+                        rate = rate_func(EI, Eavg, Z, ll, m, lam)
                         ne_new = n[k, l]-ng*exp(-rate*dt)
                         # Remove energy from the laser
                         dE = energy_loss(ne[k, l], ne_new, EI+temp, dz, dt, e[k, l])

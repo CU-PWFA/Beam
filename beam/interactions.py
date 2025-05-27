@@ -14,7 +14,7 @@ import beam.calc.laser as lcalc
 import beam.calc.electron as ecalc
 
 
-def pulse_plasma(pulse, plasma):
+def pulse_plasma(pulse, plasma, ionization='adk'):
     """ Propagates a pulse through a gas, ionizing and refracting as it goes.
     
     Parameters
@@ -23,13 +23,18 @@ def pulse_plasma(pulse, plasma):
         The laser pulse to propagate through the plasma.
     plasma : Plasma class
         The gas to propagate the laser pulse through.
+    ionization : string, optional
+        The ionization model, options are:
+            adk
+            ppt
+            lithium
     """
     pulse.e = np.array(pcalc.plasma_refraction(pulse.e, pulse.x, pulse.y,
                       plasma.z, pulse.t, pulse.lam, plasma.n0, pulse.z[-1],
                       pulse.fft, pulse.ifft, pulse.save_field, 
                       plasma.save_plasma_density, plasma.atom, 
                       plasma.load_num_den, plasma.load_plasma_den,
-                      pulse.threads))
+                      pulse.threads, ionization))
 
 
 def pulse_plasma_energy(pulse, plasma, temp=0.0, n2=0.0, ionization='adk'):
@@ -48,6 +53,7 @@ def pulse_plasma_energy(pulse, plasma, temp=0.0, n2=0.0, ionization='adk'):
     ionization : string, optional
         The ionization model, options are:
             adk
+            ppt
             lithium
     """
     pulse.e = np.array(pcalc.plasma_refraction_energy(pulse.e, pulse.x, pulse.y,
